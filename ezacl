@@ -27,8 +27,8 @@ if [ "$perm" = "rw" ]; then
 		echo "running: setfacl -m g:$group:rwxpaARWcs:fd:allow $file"
 		setfacl -m g:"$group":rwxpaARWcs:fd:allow "$file"
         else
-		echo "running: setfacl -m g:$group:rwxpaARWcs::allow $file"
-		setfacl -m g:"$group":rwxpaARWcs::allow "$file"
+		echo "running: setfacl -m g:$group:rwpaARWcs::allow $file"
+		setfacl -m g:"$group":rwpaARWcs::allow "$file"
         fi
 
 elif [ "$perm" = "ro" ]; then
@@ -36,8 +36,8 @@ elif [ "$perm" = "ro" ]; then
             echo "running: setfacl -m g:$group:rxaRcs:fd:allow $file"
             setfacl -m g:"$group":rxaRcs:fd:allow "$file"
         else
-            echo "running: setfacl -m g:$group:rxaRcs::allow $file"
-            setfacl -m g:"$group":rxaRcs::allow "$file"
+            echo "running: setfacl -m g:$group:raRcs::allow $file"
+            setfacl -m g:"$group":raRcs::allow "$file"
         fi
 
 elif [ "$perm" = "na" ]; then
