@@ -16,29 +16,38 @@ if [ ! $(getent group "$group") ]; then
 fi
 
 #check file valid
-if [ -d "$file" ]; then
-	isdir=$true
-elif  [ -f "$file" ]; then
-	isdir=$false
-else
+if [ ! -d "$file" ] && [ ! -f "$file" ]; then
 	(>&2 echo 'invalid dir!')
 	exit 1
 fi
 
 #perform op, if valid
 if [ "$perm" = "rw" ]; then
-	if [ $isdir -eq $true ]; then
+	if [ -d "$file"  ]; then
 		echo "running: setfacl -m g:$group:rwxpaARWcs:fd:allow $file"
 		setfacl -m g:"$group":rwxpaARWcs:fd:allow "$file"
+        else
+		echo "running: setfacl -m g:$group:rwxpaARWcs::allow $file"
+		setfacl -m g:"$group":rwxpaARWcs::allow "$file"
+        fi
 
 elif [ "$perm" = "ro" ]; then
-        echo "running: setfacl -m g:$group:rxaRcs:fd:allow $file"
-        setfacl -m g:"$group":rxaRcs:fd:allow "$file"
+	if [ -d "$file"  ]; then
+            echo "running: setfacl -m g:$group:rxaRcs:fd:allow $file"
+            setfacl -m g:"$group":rxaRcs:fd:allow "$file"
+        else
+            echo "running: setfacl -m g:$group:rxaRcs::allow $file"
+            setfacl -m g:"$group":rxaRcs::allow "$file"
+        fi
 
 elif [ "$perm" = "na" ]; then
-        echo "running: setfacl -m g:$group:aRcs:fd:allow $file"
-        setfacl -m g:"$group":aRcs:fd:allow "$file"
-
+	if [ -d "$file"  ]; then
+            echo "running: setfacl -m g:$group:aRcs:fd:allow $file"
+            setfacl -m g:"$group":aRcs:fd:allow "$file"
+        else
+            echo "running: setfacl -m g:$group:aRcs::allow $file"
+            setfacl -m g:"$group":aRcs::allow "$file"
+        fi
 else
 	(>&2 echo 'invalid permission code!')
 	exit 1
