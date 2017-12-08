@@ -1,0 +1,45 @@
+#!/bin/bash
+group="$1"
+perm="$2"
+file="$3"
+
+#check number of args
+if [ $# -eq 0 ] || [ $# -gt 3 ]; then 
+	echo 'syntax: ezacl <group> <rw|ro|na> <dir>'
+	exit 0
+fi
+
+#check group valid
+if [ ! $(getent group "$group") ]; then
+	(>&2 echo 'invalid group!')
+	exit 1
+fi
+
+#check file valid
+if [ -d "$file" ]; then
+	isdir=$true
+elif  [ -f "$file" ]; then
+	isdir=$false
+else
+	(>&2 echo 'invalid dir!')
+	exit 1
+fi
+
+#perform op, if valid
+if [ "$perm" = "rw" ]; then
+	if [ $isdir -eq $true ]; then
+		echo "running: setfacl -m g:$group:rwxpaARWcs:fd:allow $file"
+		setfacl -m g:"$group":rwxpaARWcs:fd:allow "$file"
+
+elif [ "$perm" = "ro" ]; then
+        echo "running: setfacl -m g:$group:rxaRcs:fd:allow $file"
+        setfacl -m g:"$group":rxaRcs:fd:allow "$file"
+
+elif [ "$perm" = "na" ]; then
+        echo "running: setfacl -m g:$group:aRcs:fd:allow $file"
+        setfacl -m g:"$group":aRcs:fd:allow "$file"
+
+else
+	(>&2 echo 'invalid permission code!')
+	exit 1
+fi
